@@ -3,11 +3,11 @@ package ru.javawebinar.topjava.util;
 import ru.javawebinar.topjava.model.UserMeal;
 import ru.javawebinar.topjava.model.UserMealWithExcess;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class UserMealsUtil {
     public static void main(String[] args) {
@@ -28,8 +28,34 @@ public class UserMealsUtil {
     }
 
     public static List<UserMealWithExcess> filteredByCycles(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
-        // TODO return filtered list with excess. Implement by cycles
-        return null;
+        //создать мапу со всеми датами приема пищи и суммы количества съеденных калорий за этот день
+        Map<LocalDate, Integer> mapOfCaloriesPerDay = new HashMap<>();
+        for (UserMeal userMeal : meals){
+            LocalDate daysOfEating = userMeal.getDateTime().toLocalDate();
+            if (mapOfCaloriesPerDay.containsKey(daysOfEating)){
+                Integer caloriesPerDish = mapOfCaloriesPerDay.get(daysOfEating) + userMeal.getCalories();
+                mapOfCaloriesPerDay.put(daysOfEating, caloriesPerDish);
+            } else {
+                mapOfCaloriesPerDay.put(daysOfEating, userMeal.getCalories());
+            }
+        }
+
+        //удалить из мапы лишние элементы со значением калорий меньше чем в caloriesPerDay
+        for(Iterator<Map.Entry<LocalDate, Integer>> it = mapOfCaloriesPerDay.entrySet().iterator(); it.hasNext(); ) {
+            Map.Entry<LocalDate, Integer> entry = it.next();
+            if(entry.getValue() <= caloriesPerDay) {
+                it.remove();
+            }
+        }
+
+        //добавить в резултирующий список те приёмы пищи которые соответствуют дате из мапы и поподают в указанный временной промежуток
+        List<UserMealWithExcess> mealsExcess = new ArrayList<>();
+        for (UserMeal userMeal : meals){
+            if (TimeUtil.isBetweenHalfOpen(userMeal.getDateTime().toLocalTime(), startTime, endTime) && mapOfCaloriesPerDay.containsKey(userMeal.getDateTime().toLocalDate())) {
+                mealsExcess.add(new UserMealWithExcess(userMeal.getDateTime(), userMeal.getDescription(), userMeal.getCalories(), true));
+            }
+        }
+        return mealsExcess;
     }
 
     public static List<UserMealWithExcess> filteredByStreams(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
