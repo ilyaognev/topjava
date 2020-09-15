@@ -32,12 +32,8 @@ public class UserMealsUtil {
         Map<LocalDate, Integer> mapOfCaloriesPerDay = new HashMap<>();
         for (UserMeal userMeal : meals){
             LocalDate daysOfEating = userMeal.getDateTime().toLocalDate();
-            if (mapOfCaloriesPerDay.containsKey(daysOfEating)){
-                Integer caloriesPerDish = mapOfCaloriesPerDay.get(daysOfEating) + userMeal.getCalories();
-                mapOfCaloriesPerDay.put(daysOfEating, caloriesPerDish);
-            } else {
-                mapOfCaloriesPerDay.put(daysOfEating, userMeal.getCalories());
-            }
+            int caloriesPerEating = userMeal.getCalories();
+            mapOfCaloriesPerDay.merge(daysOfEating, caloriesPerEating, (caloriesBefore, caloriesNew) -> caloriesBefore + caloriesNew);
         }
 
         //удалить из мапы лишние элементы со значением калорий меньше чем в caloriesPerDay
