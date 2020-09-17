@@ -37,16 +37,9 @@ public class UserMealsUtil {
             mapOfCaloriesPerDay.merge(daysOfEating, caloriesPerEating, (caloriesBefore, caloriesNew) -> caloriesBefore + caloriesNew);
         }
 
-        for(Iterator<Map.Entry<LocalDate, Integer>> it = mapOfCaloriesPerDay.entrySet().iterator(); it.hasNext(); ) {
-            Map.Entry<LocalDate, Integer> entry = it.next();
-            if(entry.getValue() <= caloriesPerDay) {
-                it.remove();
-            }
-        }
-
         List<UserMealWithExcess> mealsExcess = new ArrayList<>();
         for (UserMeal userMeal : meals){
-            if (TimeUtil.isBetweenHalfOpen(userMeal.getDateTime().toLocalTime(), startTime, endTime) && mapOfCaloriesPerDay.containsKey(userMeal.getDateTime().toLocalDate())) {
+            if (TimeUtil.isBetweenHalfOpen(userMeal.getDateTime().toLocalTime(), startTime, endTime) && mapOfCaloriesPerDay.get(userMeal.getLocalDate()) > caloriesPerDay) {
                 mealsExcess.add(new UserMealWithExcess(userMeal.getDateTime(), userMeal.getDescription(), userMeal.getCalories(), true));
             }
         }
