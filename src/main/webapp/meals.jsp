@@ -26,14 +26,15 @@
     <tbody>
     <c:forEach items="${meals}" var="meal">
         <tr style="color:${meal.excess ? 'limegreen' : 'red'}">
-            <td><c:out value="${f:formatLocalDateTime(meal.dateTime, 'dd.MM.yyyy')}"/></td>
+            <td><c:out value="${f:formatLocalDateTime(meal.dateTime, 'dd.MM.yyyy HH:mm')}"/></td>
             <td><c:out value="${meal.description}"/></td>
             <td><c:out value="${meal.calories}"/></td>
-            <td><c:out value="Update"/></td>
-            <td><c:out value="Delete"/></td>
+            <td><a href="meals?action=edit&mealId=<c:out value="${meal.id}"/>">Update</a></td>
+            <td><a href="meals?action=delete&mealId=<c:out value="${meal.id}"/>">Delete</a></td>
         </tr>
     </c:forEach>
     </tbody>
+    <p><a href="mealServlet?action=insert">Add meal</a></p>
 </table>
 </body>
 </html>
