@@ -2,78 +2,107 @@ package ru.javawebinar.topjava.web;
 
 import org.slf4j.Logger;
 import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.model.MealTo;
+import ru.javawebinar.topjava.repository.InMemoryMealRepository;
 import ru.javawebinar.topjava.repository.MealRepository;
-import ru.javawebinar.topjava.repository.MealRepositoryImpl;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
+import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-@WebServlet(name = "MealServlet")
 public class MealServlet extends HttpServlet {
-    private static final Logger log = getLogger(UserServlet.class);
-    private static String INSERT_OR_EDIT = "mealsEditor.jsp";
-    private static String LIST_MEALS = "/meals.jsp";
-    private static MealRepository repository = new MealRepositoryImpl();
+    private static final Logger log = getLogger(MealServlet.class);
+    private static final String insertOrEdit = "mealsEditor.jsp";
+    private static final String listMeals = "meals.jsp";
+    private MealRepository repository;
+
+    public void init() throws ServletException {
+        repository = new InMemoryMealRepository();
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        log.debug("redirect to users");
+        log.debug("redirect to meals");
 
         String forward = "";
         String action = request.getParameter("action");
+        RequestDispatcher view;
 
-        if (action.equalsIgnoreCase("delete")) {
-            int mealId = Integer.parseInt(request.getParameter("mealId"));
-            repository.deleteMeal(mealId);
-            forward = LIST_MEALS;
-            request.setAttribute("meals", repository.getAllMeals());
-        } else if (action.equalsIgnoreCase("edit")) {
-            forward = INSERT_OR_EDIT;
-            int mealId = Integer.parseInt(request.getParameter("mealId"));
-            Meal meal = repository.getById(mealId);
-            request.setAttribute("meal", meal);
-        } else if (action.equalsIgnoreCase("listMeals")) {
-            forward = LIST_MEALS;
-            request.setAttribute("meals", repository.getAllMeals());
-        } else {
-            forward = LIST_MEALS;
-            request.setAttribute("meals", repository.getAllMeals());
-
+        if (action == null) {
+            action = "";
         }
 
-//        forward = LIST_MEALS;
-//        request.setAttribute("meals", repository.getAllMeals());
+        switch (action) {
+            case "delete":
+                log.debug("meal action = delete");
+                repository.delete(getId(request));
+                response.sendRedirect("meals");
+                break;
+            case "edit":
+                log.debug("meal action = edit");
+                forward = insertOrEdit;
+                Meal meal = repository.getById(getId(request));
+                request.setAttribute("meal", meal);
+                view = request.getRequestDispatcher(forward);
+                view.forward(request, response);
+                break;
+            case "add":
+                log.debug("meal action = add");
+                forward = insertOrEdit;
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+                LocalDateTime now = LocalDateTime.now();
+                String formatDateTimeString = now.format(formatter);
+                LocalDateTime formatDateTime = LocalDateTime.parse(formatDateTimeString, formatter);
 
-        RequestDispatcher view = request.getRequestDispatcher(forward);
-        view.forward(request, response);
+                Meal newMeal = new Meal(formatDateTime, "", 0);
+                request.setAttribute("meal", newMeal);
+                view = request.getRequestDispatcher(forward);
+                view.forward(request, response);
+                break;
+            default:
+                log.debug("meal action = default");
+                forward = listMeals;
+                request.setAttribute("meals", getMealTo());
+                view = request.getRequestDispatcher(forward);
+                view.forward(request, response);
+                break;
+        }
+
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
 
+        log.debug("Add and Update in doPost");
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        LocalDateTime dateTime = LocalDateTime.parse(request.getParameter("dateTime"), formatter);
+        LocalDateTime dateTime = LocalDateTime.parse(request.getParameter("dateTime"));
         String description = request.getParameter("description");
         int calories = Integer.parseInt(request.getParameter("calories"));
+        int id = getId(request);
 
         Meal meal = new Meal(dateTime, description, calories);
 
-        RequestDispatcher view = request.getRequestDispatcher(LIST_MEALS);
-        request.setAttribute("meals", repository.getAllMeals());
-        view.forward(request, response);
+        repository.update(meal, id);
+        response.sendRedirect("meals");
+    }
+
+    protected int getId(HttpServletRequest request) {
+        return Integer.parseInt(request.getParameter("mealId"));
+    }
+
+    protected List<MealTo> getMealTo() {
+        return MealsUtil.filteredByStreams(repository.getAll(), LocalTime.MIN, LocalTime.MAX, MealsUtil.MAX_CALORIES_PER_DAY);
     }
 }
