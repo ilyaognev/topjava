@@ -7,7 +7,6 @@ import ru.javawebinar.topjava.repository.InMemoryMealRepository;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.MealsUtil;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -16,6 +15,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -34,9 +34,7 @@ public class MealServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         log.debug("redirect to meals");
 
-        String forward = "";
         String action = request.getParameter("action");
-        RequestDispatcher view;
 
         if (action == null) {
             action = "";
@@ -50,31 +48,25 @@ public class MealServlet extends HttpServlet {
                 break;
             case "edit":
                 log.debug("meal action = edit");
-                forward = insertOrEdit;
                 Meal meal = repository.getById(getId(request));
                 request.setAttribute("meal", meal);
-                view = request.getRequestDispatcher(forward);
-                view.forward(request, response);
+                request.getRequestDispatcher(insertOrEdit).forward(request, response);
                 break;
             case "add":
                 log.debug("meal action = add");
-                forward = insertOrEdit;
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
                 LocalDateTime now = LocalDateTime.now();
                 String formatDateTimeString = now.format(formatter);
                 LocalDateTime formatDateTime = LocalDateTime.parse(formatDateTimeString, formatter);
 
-                Meal newMeal = new Meal(formatDateTime, "", 0);
+                Meal newMeal = new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 0);
                 request.setAttribute("meal", newMeal);
-                view = request.getRequestDispatcher(forward);
-                view.forward(request, response);
+                request.getRequestDispatcher(insertOrEdit).forward(request, response);
                 break;
             default:
                 log.debug("meal action = default");
-                forward = listMeals;
                 request.setAttribute("meals", getMealTo());
-                view = request.getRequestDispatcher(forward);
-                view.forward(request, response);
+                request.getRequestDispatcher(listMeals).forward(request, response);
                 break;
         }
 
@@ -92,9 +84,9 @@ public class MealServlet extends HttpServlet {
         int calories = Integer.parseInt(request.getParameter("calories"));
         int id = getId(request);
 
-        Meal meal = new Meal(dateTime, description, calories);
+        Meal meal = new Meal(id, dateTime, description, calories);
 
-        repository.update(meal, id);
+        repository.update(meal);
         response.sendRedirect("meals");
     }
 

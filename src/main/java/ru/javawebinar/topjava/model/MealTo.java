@@ -11,7 +11,7 @@ public class MealTo {
 
 
     public MealTo(LocalDateTime dateTime, String description, int calories, boolean excess) {
-        this(-1, dateTime, description, calories, excess);
+        this(0, dateTime, description, calories, excess);
     }
 
     public MealTo(int id, LocalDateTime dateTime, String description, int calories, boolean excess) {

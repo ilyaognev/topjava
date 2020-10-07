@@ -14,7 +14,7 @@
         type="text" name="description"
         value="${meal.description}"/> <br/>
     Calories : <input
-        type="text" name="calories"
+        type="number" name="calories"
         value="${meal.calories}"/> <br/>
     <p><input type="hidden" name="mealId"
               value=${meal.id}
