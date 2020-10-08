@@ -54,11 +54,6 @@ public class MealServlet extends HttpServlet {
                 break;
             case "add":
                 log.debug("meal action = add");
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-                LocalDateTime now = LocalDateTime.now();
-                String formatDateTimeString = now.format(formatter);
-                LocalDateTime formatDateTime = LocalDateTime.parse(formatDateTimeString, formatter);
-
                 Meal newMeal = new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 0);
                 request.setAttribute("meal", newMeal);
                 request.getRequestDispatcher(insertOrEdit).forward(request, response);

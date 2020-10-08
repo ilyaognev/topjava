@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class InMemoryMealRepository implements MealRepository {
@@ -25,7 +26,9 @@ public class InMemoryMealRepository implements MealRepository {
 
     private Map<Integer, Meal> realySafeMap = testMealList
             .stream()
-            .collect(Collectors.toConcurrentMap(Meal::getId, meal -> new Meal(meal.getId(), meal.getDateTime(), meal.getDescription(), meal.getCalories())));
+//            .collect(Collectors.toConcurrentMap(Meal::getId, meal -> new Meal(meal.getId(), meal.getDateTime(), meal.getDescription(), meal.getCalories())));
+//            .collect(Collectors.toConcurrentMap(Meal::getId, meal -> meal));
+            .collect(Collectors.toConcurrentMap(Meal::getId, Function.identity()));
 
     @Override
     public Meal add(Meal meal) {
@@ -41,7 +44,6 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public void delete(int id) {
-        //safeList.removeIf(m -> m.getId() == id);
         realySafeMap.remove(id);
     }
 
