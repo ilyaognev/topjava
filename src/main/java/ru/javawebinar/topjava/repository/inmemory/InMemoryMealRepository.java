@@ -54,10 +54,7 @@ public class InMemoryMealRepository implements MealRepository {
         if (meals == null) {
             return null;
         }
-        return meals.values().stream()
-                .filter(m -> m.getId() == id)
-                .findFirst()
-                .orElse(null);
+        return meals.get(id);
     }
 
     @Override
@@ -67,7 +64,7 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public List<Meal> getFiltered(int userId, LocalDate start, LocalDate end) {
-        return filterByPredicate(userId, meal -> DateTimeUtil.isBetweenHalfOpen(meal.getDate(), start, end));
+        return filterByPredicate(userId, meal -> DateTimeUtil.isBetweenIncluding(meal.getDate(), start, end));
     }
 
     private List<Meal> filterByPredicate(int userId, Predicate<Meal> filter) {
