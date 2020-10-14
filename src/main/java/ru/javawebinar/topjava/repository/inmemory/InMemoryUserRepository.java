@@ -21,9 +21,9 @@ public class InMemoryUserRepository implements UserRepository {
     private final AtomicInteger counter = new AtomicInteger(0);
 
     {
-        repository.put(counter.getAndDecrement(), new User(counter.get(), "Ivan", "ivan@mail.ru", "123", Role.USER));
-        repository.put(counter.getAndDecrement(), new User(counter.get(), "Nik", "nik@mail.ru", "123", Role.USER));
-        repository.put(counter.getAndDecrement(), new User(counter.get(), "Oleg", "oleg@mail.ru", "123", Role.USER));
+        save(new User(counter.get(), "Ivan", "ivan@mail.ru", "123", Role.USER));
+        save(new User(counter.get(), "Nik", "nik@mail.ru", "123", Role.USER));
+        save(new User(counter.get(), "Oleg", "oleg@mail.ru", "123", Role.USER));
     }
 
     @Override
@@ -62,6 +62,9 @@ public class InMemoryUserRepository implements UserRepository {
     @Override
     public User getByEmail(String email) {
         log.info("getByEmail {}", email);
-        return repository.values().stream().filter(u -> u.getEmail().equals(email)).findFirst().orElse(null);
+        return repository.values().stream()
+                .filter(u -> u.getEmail().equals(email))
+                .findFirst()
+                .orElse(null);
     }
 }
