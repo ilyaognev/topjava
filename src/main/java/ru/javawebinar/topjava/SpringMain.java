@@ -28,7 +28,8 @@ public class SpringMain {
             mealRestController.create(new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 19, 0), "Обед3 Юзера Spring", 700));
             mealRestController.create(new Meal(LocalDateTime.of(2020, Month.JANUARY, 28, 20, 0), "Обед4 Юзера Spring", 2001));
             mealRestController.filter(LocalDate.of(2020, Month.JANUARY, 29), LocalDate.of(2020, Month.JANUARY, 30),
-                    LocalTime.of(14,00), LocalTime.of(16,00));
+                    LocalTime.of(14, 00), LocalTime.of(16, 00));
+            System.out.println(mealRestController.get(22));
         }
     }
 }
