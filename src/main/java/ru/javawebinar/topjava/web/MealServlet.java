@@ -21,12 +21,18 @@ public class MealServlet extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(MealServlet.class);
 
     private MealRestController mealRestController;
+    private ConfigurableApplicationContext appCtx;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        ConfigurableApplicationContext appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml");
+        appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml");
         mealRestController = appCtx.getBean(MealRestController.class);
+    }
+    @Override
+   public void destroy(){
+        appCtx.close();
+        super.destroy();
     }
 
     @Override

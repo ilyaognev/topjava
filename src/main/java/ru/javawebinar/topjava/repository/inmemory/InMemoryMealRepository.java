@@ -69,9 +69,6 @@ public class InMemoryMealRepository implements MealRepository {
 
     private List<Meal> filterByPredicate(int userId, Predicate<Meal> filter) {
         Map<Integer, Meal> meals = repository.get(userId);
-
-        if (meals == null) return null;
-
         return meals.values().stream()
                 .filter(filter)
                 .sorted(Comparator.comparing(Meal::getDateTime, Comparator.reverseOrder()))
