@@ -13,7 +13,6 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
 
@@ -23,6 +22,7 @@ import static ru.javawebinar.topjava.MealTestData.*;
 
 @ContextConfiguration({
         "classpath:spring/spring-app.xml",
+        "classpath:spring/spring-jdbc.xml",
         "classpath:spring/spring-db.xml"
 })
 @RunWith(SpringRunner.class)
@@ -38,7 +38,7 @@ public class MealServiceTest {
     @Test
     public void get() throws Exception {
         Meal meal = service.get(MEAL_ID, USER_ID);
-        assertMatch(meal, MEAL_1);
+        assertMatch(meal, Meal1);
     }
 
     @Test
@@ -51,13 +51,13 @@ public class MealServiceTest {
     public void getBetweenInclusive() throws Exception {
         List<Meal> between = service.getBetweenInclusive(LocalDate.of(2020, Month.JANUARY, 29),
                 LocalDate.of(2020, Month.JANUARY, 30), USER_ID);
-        assertMatch(between, MEAL_3, MEAL_2, MEAL_1);
+        assertMatch(between, Meal3, Meal2, Meal1);
     }
 
     @Test
     public void getAll() throws Exception {
         List<Meal> all = service.getAll(USER_ID);
-        assertMatch(all, MEAL_5, MEAL_4, MEAL_3, MEAL_2, MEAL_1);
+        assertMatch(all, Meal5, Meal4, Meal3, Meal2, Meal1);
     }
 
     @Test
@@ -79,22 +79,38 @@ public class MealServiceTest {
 
     @Test
     public void deleteStrangeMeal() throws Exception {
-        assertThrows(NotFoundException.class, () -> service.delete(MEAL_ID, WRONG_USER_ID));
+        assertThrows(NotFoundException.class, () -> service.delete(MEAL_ID, ADMIN_ID));
     }
 
     @Test
     public void getStrangeMeal() throws Exception {
-        assertThrows(NotFoundException.class, () -> service.get(MEAL_ID, WRONG_USER_ID));
+        assertThrows(NotFoundException.class, () -> service.get(MEAL_ID, ADMIN_ID));
     }
 
     @Test
     public void updateStrangeMeal() throws Exception {
-        assertThrows(NotFoundException.class, () -> service.update(MEAL_1, WRONG_USER_ID));
+        assertThrows(NotFoundException.class, () -> service.update(getUpdated(), ADMIN_ID));
     }
 
     @Test
     public void duplicateDateTimeCreate() throws Exception {
         assertThrows(DataAccessException.class, () ->
-                service.create(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак ПОВТОР", 500), USER_ID).getDateTime());
+                service.create(new Meal(Meal1.getDateTime(), "Завтрак ПОВТОР", 500), USER_ID));
+    }
+
+    @Test
+    public void deleteNotFoundMeal() throws Exception {
+        assertThrows(NotFoundException.class, () -> service.delete(NOT_FOUND_ID, ADMIN_ID));
+    }
+
+    @Test
+    public void getNotFoundMeal() throws Exception {
+        assertThrows(NotFoundException.class, () -> service.get(NOT_FOUND_ID, ADMIN_ID));
+    }
+
+    @Test
+    public void getBetweenWithNull() throws Exception {
+        List<Meal> between = service.getBetweenInclusive(null, null, USER_ID);
+        assertMatch(between, Meal5, Meal4, Meal3, Meal2, Meal1);
     }
 }
