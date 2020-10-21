@@ -28,7 +28,6 @@ import static ru.javawebinar.topjava.MealTestData.*;
 @RunWith(SpringRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
-
     static {
         SLF4JBridgeHandler.install();
     }
@@ -50,15 +49,15 @@ public class MealServiceTest {
 
     @Test
     public void getBetweenInclusive() throws Exception {
-        List<Meal> between = service.getBetweenInclusive(LocalDate.of(2020, Month.APRIL, 11),
-                LocalDate.of(2020, Month.APRIL, 13), USER_ID);
-        assertMatch(between, MEAL_2, MEAL_3, MEAL_5);
+        List<Meal> between = service.getBetweenInclusive(LocalDate.of(2020, Month.JANUARY, 29),
+                LocalDate.of(2020, Month.JANUARY, 30), USER_ID);
+        assertMatch(between, MEAL_3, MEAL_2, MEAL_1);
     }
 
     @Test
     public void getAll() throws Exception {
         List<Meal> all = service.getAll(USER_ID);
-        assertMatch(all, MEAL_1, MEAL_2, MEAL_3, MEAL_4, MEAL_5);
+        assertMatch(all, MEAL_5, MEAL_4, MEAL_3, MEAL_2, MEAL_1);
     }
 
     @Test
@@ -80,22 +79,22 @@ public class MealServiceTest {
 
     @Test
     public void deleteStrangeMeal() throws Exception {
-        assertThrows(NotFoundException.class, () -> service.delete(MEAL_ID, USER_ID + 100));
+        assertThrows(NotFoundException.class, () -> service.delete(MEAL_ID, WRONG_USER_ID));
     }
 
     @Test
     public void getStrangeMeal() throws Exception {
-        assertThrows(NotFoundException.class, () -> service.get(MEAL_ID, USER_ID + 100));
+        assertThrows(NotFoundException.class, () -> service.get(MEAL_ID, WRONG_USER_ID));
     }
 
     @Test
     public void updateStrangeMeal() throws Exception {
-        assertThrows(NotFoundException.class, () -> service.update(MEAL_1, USER_ID + 100));
+        assertThrows(NotFoundException.class, () -> service.update(MEAL_1, WRONG_USER_ID));
     }
 
     @Test
     public void duplicateDateTimeCreate() throws Exception {
         assertThrows(DataAccessException.class, () ->
-                service.create(new Meal(LocalDateTime.of(2020, Month.APRIL, 4, 4, 5), "Users night dozor", 1000), USER_ID));
+                service.create(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак ПОВТОР", 500), USER_ID).getDateTime());
     }
 }
