@@ -39,20 +39,18 @@ public class MealServiceTest {
     public Stopwatch stopwatch = new Stopwatch() {
         @Override
         protected void finished(long nanos, Description description) {
-            logInfo(description, "finished", nanos);
+            logInfo(description, nanos);
         }
     };
 
-    private static void logInfo(Description description, String status, long nanos) {
-        logger.info(String.format("Test %s %s, spent %d microseconds", description.getMethodName(), status, TimeUnit.NANOSECONDS.toMicros(nanos)));
-        watchedLog += description.getMethodName() + " " + "finished in " + TimeUnit.NANOSECONDS.toMicros(nanos) + " microseconds\n";
+    private static void logInfo(Description description, long nanos) {
+        String line = String.format("\n%-25s %5d ms.", description.getMethodName(), TimeUnit.NANOSECONDS.toMillis(nanos));
+        watchedLog += line;
     }
 
     @AfterClass
     public static void printLog() {
-        System.out.println("----------------------");
-        System.out.println(watchedLog);
-        System.out.println("______________________");
+        logger.info(watchedLog);
     }
 
     @Autowired
