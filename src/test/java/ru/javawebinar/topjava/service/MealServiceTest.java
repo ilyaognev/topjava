@@ -1,6 +1,10 @@
 package ru.javawebinar.topjava.service;
 
+import org.junit.AfterClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Stopwatch;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -13,6 +17,8 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -26,6 +32,28 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @RunWith(SpringRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
+    private static String watchedLog;
+    private static final Logger logger = Logger.getLogger("");
+
+    @Rule
+    public Stopwatch stopwatch = new Stopwatch() {
+        @Override
+        protected void finished(long nanos, Description description) {
+            logInfo(description, "finished", nanos);
+        }
+    };
+
+    private static void logInfo(Description description, String status, long nanos) {
+        logger.info(String.format("Test %s %s, spent %d microseconds", description.getMethodName(), status, TimeUnit.NANOSECONDS.toMicros(nanos)));
+        watchedLog += description.getMethodName() + " " + "finished in " + TimeUnit.NANOSECONDS.toMicros(nanos) + " microseconds\n";
+    }
+
+    @AfterClass
+    public static void printLog() {
+        System.out.println("----------------------");
+        System.out.println(watchedLog);
+        System.out.println("______________________");
+    }
 
     @Autowired
     private MealService service;
