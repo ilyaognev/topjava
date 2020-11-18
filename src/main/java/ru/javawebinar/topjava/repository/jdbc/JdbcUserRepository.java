@@ -54,14 +54,13 @@ public class JdbcUserRepository implements UserRepository {
         if (user.isNew()) {
             Number newKey = insertUser.executeAndReturnKey(parameterSource);
             user.setId(newKey.intValue());
-            insertRoles(user);
         } else if (namedParameterJdbcTemplate.update("""
                    UPDATE users SET name=:name, email=:email, password=:password, 
                    registered=:registered, enabled=:enabled, calories_per_day=:caloriesPerDay WHERE id=:id
                 """, parameterSource) == 0) {
-            insertRoles(user);
             return null;
         }
+        insertRoles(user);
         return user;
     }
 
@@ -141,8 +140,8 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     private void insertRoles(User user) {
-        List<Role> roles = new ArrayList<>(user.getRoles());
-        if (!roles.isEmpty()) {
+        if (!user.getRoles().isEmpty()) {
+            List<Role> roles = new ArrayList<>(user.getRoles());
             jdbcTemplate.batchUpdate("INSERT INTO user_roles (user_id, role) VALUES (?, ?)",
                     new BatchPreparedStatementSetter() {
                         @Override

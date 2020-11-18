@@ -7,8 +7,6 @@
 <body>
 <jsp:include page="fragments/bodyHeader.jsp"/>
 <section>
-    <h3><a href="/topjava"><spring:message code="app.home"/></a></h3>
-    <hr>
     <h2><spring:message code="${meal.isNew() ? 'meal.add' : 'meal.edit'}"/></h2>
     <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.Meal" scope="request"/>
     <form method="post" action="meals">

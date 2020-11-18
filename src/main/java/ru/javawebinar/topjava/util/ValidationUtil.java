@@ -3,12 +3,17 @@ package ru.javawebinar.topjava.util;
 import ru.javawebinar.topjava.model.AbstractBaseEntity;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
-import javax.validation.*;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Validation;
+import javax.validation.Validator;
 import java.util.Set;
 
 public class ValidationUtil {
     private ValidationUtil() {
     }
+
+    private static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
     public static <T> T checkNotFoundWithId(T object, int id) {
         checkNotFoundWithId(object != null, id);
@@ -57,11 +62,9 @@ public class ValidationUtil {
     }
 
     public static <T> void validate(T valideteble) {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        Validator validator = factory.getValidator();
         Set<ConstraintViolation<T>> violations = validator.validate(valideteble);
         if (!violations.isEmpty()) {
-            throw new ValidationException();
+            throw new ConstraintViolationException(violations);
         }
     }
 }

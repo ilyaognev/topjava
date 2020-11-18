@@ -29,11 +29,11 @@ import static ru.javawebinar.topjava.util.ValidationUtil.getRootCause;
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 @ActiveProfiles(resolver = ActiveDbProfileResolver.class)
 abstract public class AbstractServiceTest {
-    @Autowired
-    private Environment environment;
-
     @ClassRule
     public static ExternalResource summary = TimingRules.SUMMARY;
+
+    @Autowired
+    private Environment environment;
 
     @Rule
     public Stopwatch stopwatch = TimingRules.STOPWATCH;
