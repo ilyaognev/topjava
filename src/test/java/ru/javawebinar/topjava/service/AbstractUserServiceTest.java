@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.UncategorizedSQLException;
 import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;

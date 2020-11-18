@@ -26,11 +26,6 @@ public class JspMealController extends AbstractMealController {
         super(service);
     }
 
-    private int getId(HttpServletRequest request) {
-        String paramId = Objects.requireNonNull(request.getParameter("id"));
-        return Integer.parseInt(paramId);
-    }
-
     @GetMapping("/delete")
     public String delete(HttpServletRequest request) {
         delete(getId(request));
@@ -82,4 +77,8 @@ public class JspMealController extends AbstractMealController {
         return "redirect:/meals";
     }
 
+    private int getId(HttpServletRequest request) {
+        String paramId = Objects.requireNonNull(request.getParameter("id"));
+        return Integer.parseInt(paramId);
+    }
 }
