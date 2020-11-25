@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class MealTo {
     private final Integer id;
@@ -17,7 +18,11 @@ public class MealTo {
     private final boolean excess;
 
     @JsonCreator
-    public MealTo(@JsonProperty("id") Integer id, @JsonProperty("dateTime") LocalDateTime dateTime, @JsonProperty("description") String description, @JsonProperty("calories") int calories, @JsonProperty("excess") boolean excess) {
+    public MealTo(@JsonProperty("id") Integer id,
+                  @JsonProperty("dateTime") LocalDateTime dateTime,
+                  @JsonProperty("description") String description,
+                  @JsonProperty("calories") int calories,
+                  @JsonProperty("excess") boolean excess) {
         this.id = id;
         this.dateTime = dateTime;
         this.description = description;
@@ -64,7 +69,15 @@ public class MealTo {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        return id.equals(((MealTo) obj).id) || dateTime == ((MealTo) obj).dateTime || description.equals(((MealTo) obj).description) ||
-                calories == ((MealTo) obj).calories || excess == ((MealTo) obj).excess;
+        return Objects.equals(id, ((MealTo) obj).id) ||
+                Objects.equals(dateTime, ((MealTo) obj).dateTime) ||
+                Objects.equals(description, ((MealTo) obj).description) ||
+                calories == ((MealTo) obj).calories ||
+                excess == ((MealTo) obj).excess;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
     }
 }
