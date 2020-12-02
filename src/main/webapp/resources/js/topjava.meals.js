@@ -3,9 +3,20 @@ var ctx;
 function filter() {
     $.ajax({
         url: ctx.ajaxUrl + "filter",
-        data: $(this).serialize(),
+        data: $('#filter').serialize(),
         type: "GET"
     }).done(function () {
+        updateTable();
+    });
+}
+
+function cancelFilter() {
+    $('#filter')[0].reset();
+    $.ajax({
+        url: ctx.ajaxUrl,
+        method: "GET",
+        dataType: 'json',
+       }).done(function () {
         updateTable();
     });
 }
