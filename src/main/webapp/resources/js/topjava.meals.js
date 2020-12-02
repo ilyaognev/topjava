@@ -5,9 +5,7 @@ function filter() {
         url: ctx.ajaxUrl + "filter",
         data: $('#filter').serialize(),
         type: "GET"
-    }).done(function () {
-        updateTable();
-    });
+    }).done(updateTableByData);
 }
 
 function cancelFilter() {
@@ -23,7 +21,7 @@ function cancelFilter() {
 
 $(function () {
     ctx = {
-        ajaxUrl: "meals/",
+        ajaxUrl: "ajax/meals/",
         datatableApi: $("#datatable").DataTable({
             "paging": false,
             "info": true,
