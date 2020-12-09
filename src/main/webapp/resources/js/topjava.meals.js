@@ -66,3 +66,47 @@ $(function () {
     };
     makeEditable();
 });
+
+$('#startDate').datetimepicker({
+    format:'Y-m-d',
+    onShow:function( ct ){
+        this.setOptions({
+            maxDate:$('#endDate').val()?$('#endDate').val():false
+        })
+    },
+    timepicker:false
+});
+
+$('#endDate').datetimepicker({
+    format:'Y-m-d',
+    onShow:function( ct ){
+        this.setOptions({
+            minDate:$('#startDate').val()?$('#startDate').val():false
+        })
+    },
+    timepicker:false
+});
+
+$('#startTime').datetimepicker({
+    format:'H:i',
+    onShow:function( ct ){
+        this.setOptions({
+            maxTime:$('#endTime').val()?$('#endTime').val():false
+        })
+    },
+    datepicker:false
+});
+
+$('#endTime').datetimepicker({
+    format:'H:i',
+    onShow:function( ct ){
+        this.setOptions({
+            minTime:$('#startTime').val()?$('#startTime').val():false
+        })
+    },
+    datepicker:false
+});
+
+$('#dateTime').datetimepicker({
+    format:'Y-m-d H:i',
+});
