@@ -1,4 +1,4 @@
-var ctx,mealAjaxUrl = "profile/meals/";
+let ctx, mealAjaxUrl = "profile/meals/";
 
 function updateFilteredTable() {
     $.ajax({
@@ -28,7 +28,7 @@ $(function () {
                     "data": "dateTime",
                     "render": function (data, type, row) {
                         if (type === "display") {
-                            return data.replace("T", " ").substring(0, 16);
+                            return formaterDateTime(data);
                         }
                         return data;
                     }
@@ -65,46 +65,55 @@ $(function () {
     makeEditable();
 });
 
-$('#startDate').datetimepicker({
-    format:'Y-m-d',
-    onShow:function( ct ){
+const sd = $('#startDate');
+const ed = $('#endDate');
+sd.datetimepicker({
+    format: 'Y-m-d',
+    onShow: function (ct) {
         this.setOptions({
-            maxDate:$('#endDate').val()?$('#endDate').val():false
+            maxDate: ed.val() ? ed.val() : false
         })
     },
-    timepicker:false
+    timepicker: false
 });
 
-$('#endDate').datetimepicker({
-    format:'Y-m-d',
-    onShow:function( ct ){
+ed.datetimepicker({
+    format: 'Y-m-d',
+    onShow: function (ct) {
         this.setOptions({
-            minDate:$('#startDate').val()?$('#startDate').val():false
+            minDate: sd.val() ? sd.val() : false
         })
     },
-    timepicker:false
+    timepicker: false
 });
 
-$('#startTime').datetimepicker({
-    format:'H:i',
-    onShow:function( ct ){
+const st = $('#startTime');
+const et = $('#endTime');
+st.datetimepicker({
+    format: 'H:i',
+    onShow: function (ct) {
         this.setOptions({
-            maxTime:$('#endTime').val()?$('#endTime').val():false
+            maxTime: et.val() ? et.val() : false
         })
     },
-    datepicker:false
+    datepicker: false
 });
 
-$('#endTime').datetimepicker({
-    format:'H:i',
-    onShow:function( ct ){
+et.datetimepicker({
+    format: 'H:i',
+    onShow: function (ct) {
         this.setOptions({
-            minTime:$('#startTime').val()?$('#startTime').val():false
+            minTime: st.val() ? st.val() : false
         })
     },
-    datepicker:false
+    datepicker: false
 });
 
-$('#dateTime').datetimepicker({
-    format:'Y-m-d H:i',
+const dt = $('#dateTime');
+dt.datetimepicker({
+    format: 'Y-m-d H:i',
+});
+
+dt.datetimepicker({
+    format: 'Y-m-d H:i',
 });
